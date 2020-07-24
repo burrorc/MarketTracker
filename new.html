@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bootstrap Badge</title>
-    <link rel="stylesheet" href="index.css" />
+    
     <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
@@ -16,6 +16,20 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <style type="text/css">
+    .logo{
+      width: 100px;
+      display: block;
+      margin: auto;
+    }
+    .price{
+      font-size: 75px;
+    }
+    .price span{
+      font-size: 30px;
+    }
+    
+    </style>
   </head>
   <body>
     <nav class="navbar navbar-expand-md navbar-dark py-0 fixed-top" style="background-color:#191919;">
@@ -76,22 +90,23 @@
             <h3>Keeping you current on the latest market trends</h3>
           </div>
           <div class="col-md-6 col-lg-5 align-self-center pt-md-5">
-            <form>
+            
               <div class="form-row">
                 <div class="col-8">
                   <input
+                    id="symbolInput"
                     type="text"
                     class="form-control"
-                    placeholder="NASDAQ/NYSE Symbol"
+                    placeholder="Search Stocks"
                   />
                 </div>
                 <div class="col-4">
-                  <button type="submit" class="btn btn-block btn-success">
-                    Find Info
+                  <button id="getInfo" class="btn btn-block btn-success" onclick="addDom()">
+                    Get Info
                   </button>
                 </div>
               </div>
-            </form>
+            
           </div>
         </div>
       </div>
@@ -102,32 +117,83 @@
           <h1 style="color:#02a121">Stocks</h1>
         </div>
       </div>
-      <div class="row justify-content-around">
+      <div class="row justify-content-around" id="stocks">
         <div class="col-11 col-sm-6 col-md-5 col-lg-3 border border-success mt-3" style="border-radius: 0.5em;">
-            <h3 class="text-center">AAPL</h3>
-            <img class="text-center" src="https://storage.googleapis.com/iex/api/logos/AAPL.png" alt="" style="width: 100px; display: block; margin: auto">
+            <div class="col">
+              <img class="logo" src="https://storage.googleapis.com/iex/api/logos/AAPL.png" style="float: left;">
+              <h3 class="text-center" style="font-size: 60px">AAPL</h3>
+            
+            </div>
             <p>Stock Info</p>
             <div class="col text-center">
             <button class="btn btn-success">More Details</button>
         </div>
         </div>
-        <div class="col-11 col-sm-6 col-md-5 col-lg-3 border border-success mt-3">
-            <h3 class="text-center">WMT</h3>
-            <img src="https://storage.googleapis.com/iex/api/logos/WMT.png" alt="" style="width: 100px; display: block; margin: auto">
-            <p>Stock Info</p>
-            <div class="col text-center">
-            <button class="btn btn-success">More Details</button>
-        </div>
-        </div>
-        <div class="col-11 col-sm-6 col-md-5 col-lg-3 border border-success mt-3">
-            <h3 class="text-center">WMT</h3>
-            <img src="" alt="">
-            <p>Stock Info</p>
-            <div class="col text-center">
-            <button class="btn btn-success">More Details</button>
-        </div>
-        </div>
+        
       </div>
     </div>
+    <div class="container">
+      <div class="row">
+        <div id="here">
+          <img src="" alt="">
+             </div>
+      </div>
+    </div>
+    
+    <script>
+      
+    let symbol;
+    let i;
+    i = 0;
+    let addDom;
+    addDom = function(){
+      $('#stocks').prepend("<div class='info col-11 col-sm-6 col-md-5 col-lg-3 border border-success mt-3' style='border-radius: 0.5em;'>MYDIV</div>");
+
+      $(".info").first().append("<h3 class='text-center'>"+i+"</h3>");
+      
+      i++;
+    }
+    let getSymbol;
+     getSymbol = function(){
+            symbol = document.getElementById("symbolInput").value;
+            console.log(symbol);
+            let infourl = 'https://cloud.iexapis.com/stable/stock/'+symbol+'/company?token=pk_5dae373d09704896871d6296c6e5b228';
+            let quoteurl = 'https://cloud.iexapis.com/stable/stock/'+symbol+'/quote?token=pk_5dae373d09704896871d6296c6e5b228';
+            let logourl = "https://storage.googleapis.com/iex/api/logos/"+symbol+".png";
+            console.log(infourl);
+     
+            fetch(infourl)
+            .then((response) => response.json())
+            .then((comp)=>{
+              $('#stocks').prepend("<div class='info col-11 col-sm-6 col-md-5 col-lg-3 border border-success mt-3' style='border-radius: 0.5em;'></div>");
+                $('.info').first().append("<h3 class='text-center'>"+comp.symbol+"</h3>");
+                $('.info').first().append("<h5 class='text-center'>"+comp.companyName+"</h5>");
+                $('.info').first().append("<img class='logo mt-0' src="+logourl+">");
+                
+                
+                // $('#here').append("<h3>"+comp.symbol+"</h3>");
+                // $('#here').append("<h5>"+comp.exchange+"</h5>");
+                // $('#here').append("<a href="+comp.website+">LINK</a>")
+            }),
+            
+
+            fetch(quoteurl)
+            .then((response) => response.json())
+            .then((quote)=>{
+                
+                $('.info').first().append("<h3 class='price text-center' style='font-size: 75px'>"+quote.latestPrice+" "+"<span>"+quote.change+"</span></h3>");
+                if (quote.change >= 0){
+                  $('.price > span').css('color','green');
+                }
+                else{
+                  $('.price > span').css('color','red');
+                 //$('.info').first().append("<h3 style='color: red'>"+quote.change+"</h3>");
+                }
+              
+        })
+            document.getElementById("symbolInput").value = '';
+        
+     };
+    </script>
   </body>
 </html>
