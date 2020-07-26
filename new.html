@@ -17,6 +17,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <style type="text/css">
+      .info{
+        position: relative;
+      }
+      .cancel{
+        font-size: 50px;
+        color: #02a121;
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        padding: 0px;
+        margin: 0px;
+        border: none;
+        line-height: 30px;
+        background: none;
+      }
       .logo {
         width: 100px;
         display: block;
@@ -224,23 +239,42 @@
     
     </footer>
     <script>
+      let i = 0
+      document.addEventListener('click',function(event){
+        console.log(event);
+        if(event.target.matches(".cancel")){
+          event.target.parentElement.parentElement.remove();
+          i --;
+          if(i===0){
+          $('#title').children('h1').remove();
+        }
+          
+        };
+        
+        
+      });
       document.getElementById("symbolInput").addEventListener("keyup", function(event){
         if(event.keyCode === 13){
           document.getElementById('getInfo').click()
         }
       });
+      //here
+      
       let symbol;
       let getSymbol;
+      let fromInput;
       getSymbol = function () {
         
-        symbol = document.getElementById("symbolInput").value;
+        fromInput = document.getElementById("symbolInput").value;
+        symbol = fromInput.toUpperCase();
         if(symbol === ""){
           alert("Please Enter A Symbol");
         }else{
           if(document.getElementById('title').innerText === ""){
-          $("#title").append("<h1>Stocks</h1>");
-          $("#title").first().css({"color":"#02a121","margin-top":"6px"})
+          $("#title").append("<h1 style='margin-top: 6px'>Stocks</h1>");
+          $("#title").first().css("color","#02a121")
         };
+        i++;
         let infourl =
           "https://cloud.iexapis.com/stable/stock/" +
           symbol +
@@ -251,8 +285,17 @@
           "/quote?token=pk_5dae373d09704896871d6296c6e5b228";
         let logourl =
           "https://storage.googleapis.com/iex/api/logos/" + symbol + ".png";
-        console.log(infourl);
+        
 
+        $.ajax(infourl)
+          .fail(function(){
+            console.log('you failed');
+          }
+        )
+        .done(function(){
+          console.log('you succeeded');
+        })
+        
         fetch(infourl)
           .then((response) => response.json())
           .then((comp) => {
@@ -264,7 +307,7 @@
               .append(
                 "<h3 class='text-center' style='font-size: 85px'>" +
                   comp.symbol +
-                  "</h3>"
+                  "<button class='cancel' onclick=('remInfo()')>&times;</button></h3>"
               );
             $(".info")
               .first()
@@ -282,6 +325,7 @@
                   comp.website +
                   " role='button'>Company Site</a>"
               );
+              
           }),
           fetch(quoteurl)
             .then((response) => response.json())
@@ -303,6 +347,7 @@
               }
             });
         document.getElementById("symbolInput").value = "";
+        
       };
       };
     </script>
