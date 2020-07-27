@@ -97,21 +97,21 @@ let i = 0
               fetch(quoteurl)
             .then((response) => response.json())
             .then((quote) => {
+              var color;
+              if (quote.change >= 0){
+                color = "<span style='color: green'>("+quote.change +")</span>";
+              }else{
+                color = "<span style='color: red'>("+quote.change +")</span>";
+              }
+
               $(".site")
                 .first()
                 .before(
                   "<h3 class='price text-center'>$" +
                     quote.latestPrice +
-                    " " +
-                    "<span>(" +
-                    quote.change +
-                    ")</span></h3>"
-                );
-              if (quote.change >= 0) {
-                $(".price > span").css("color", "green");
-              } else {
-                $(".price > span").css("color", "red");
-              }
+                    " " + color + "</h3>")
+                ;
+              
             }); 
           }
              
