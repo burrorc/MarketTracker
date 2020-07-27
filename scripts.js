@@ -48,10 +48,14 @@ let i = 0
 
         $.ajax(infourl)
           .fail(function(){
-            alert('Sorry '+symbol+' is not a recognized symbol. Please try again');
+            alert('Sorry '+symbol+' is not a supported symbol. Please try again');
           }
         )
         .done(function(comp){
+            
+            if(comp.companyName === null){
+              alert('Sorry '+symbol+' is not a supported symbol. Please try again');
+          }else{
             i++;
             if(document.getElementById('title').innerText === ""){
                 $("#title").append("<h1 style='margin-top: 6px'>Stocks</h1>");
@@ -70,9 +74,16 @@ let i = 0
             $(".info")
               .first()
               .append("<h5 class='text-center'>" + comp.companyName + "</h5>");
+
             $(".info")
               .first()
               .append("<img class='logo mt-0' src=" + logourl + ">");
+
+            $("img")
+              .on("error",(function() {
+                $(".info").first().children("img").attr("src", "nologo.png");
+              })),
+              
             $(".info")
               .first()
               .append("<div class='site col text-center'></div>");
@@ -101,10 +112,11 @@ let i = 0
               } else {
                 $(".price > span").css("color", "red");
               }
-            });  
+            }); 
+          }
+             
           });
-          
-            
+           
         document.getElementById("symbolInput").value = "";
         
       };
