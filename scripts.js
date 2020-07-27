@@ -90,7 +90,7 @@ let i = 0
             $(".site")
               .first()
               .append(
-                "<a class='btn btn-success mb-1' href=" +
+                "<a class='btn btn-success mb-1' target='_blank' href=" +
                   comp.website +
                   " role='button'>Company Site</a>"
               );
